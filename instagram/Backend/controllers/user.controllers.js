@@ -1,4 +1,4 @@
-
+import { Post } from "../model/post.model.js";
 import { User } from "../model/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt  from "jsonwebtoken";
@@ -20,6 +20,14 @@ export const register = async (req,res)=>{
                 success:false
             });
         };
+
+        const u_name_check = await User.findOne({username})
+        if(u_name_check){
+            return res.status(401).json({
+                message:"username already exist",
+                success:false
+            });
+        }
 
         const user = await User.findOne({email})
         if(user){
@@ -48,71 +56,68 @@ export const register = async (req,res)=>{
 
     // login--
 
-export const login = async(req,res)=>{
-    try{
-
-        const {email,password} = req.body;
-        if(!email || !password){
-            return res.status(401).json({
-                message:"something is missing",
-                success:false
+    export const login = async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            if (!email || !password) {
+                return res.status(401).json({
+                    message: "Something is missing, please check!",
+                    success: false,
+                });
+            }
+            let user = await User.findOne({ email });
+            if (!user) {
+                return res.status(401).json({
+                    message: "Incorrect email or password",
+                    success: false,
+                });
+            }
+            const isPasswordMatch = await bcrypt.compare(password, user.password);
+            if (!isPasswordMatch) {
+                return res.status(401).json({
+                    message: "Incorrect email or password",
+                    success: false,
+                });
+            };
+    
+            const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '1d' });
+    
+            // populate each post if in the posts array
+            const populatedPosts = await Promise.all(
+                user.posts.map( async (postId) => {
+                    const post = await Post.findById(postId);
+                    if(post.author.equals(user._id)){
+                        return post;
+                    }
+                    return null;
+                })
+            );
+            
+            user = {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                profilePicture: user.profilePicture,
+                bio: user.bio,
+                followers: user.followers,
+                following: user.following,
+                posts: populatedPosts
+            }
+            return res.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 1 * 24 * 60 * 60 * 1000 }).json({
+                message: `Welcome back ${user.username}`,
+                success: true,
+                user
             });
+    
+        } catch (error) {
+            console.log(error);
         }
+    };
 
-        let user = await User.findOne({email});
-        const populatedPost = await Promise.all(
-            user.post.map(async(postId)=>{
-                const post = await post.findById(postId);
-                
-                if(post.author.equals(user._id)){
-                    return post
-                }return null;
-            })
-        )
-        if(!user){
-            return res.status(401).json({
-                message:"email doesnot exixt",
-                success:false
-            });
-        }
-
-        const isPassword = await bcrypt.compare(password,user.password);  
-        if(!isPassword){
-            res.status(401).json({
-                message:"invalid password email or password",
-                success:false
-            });
-        }
-
-        user = {
-            _id:user._id,
-            username:user.username,
-            email:user.email,
-            profilePicture:user.profilePicture,
-            boi:user.bio,
-            followers:user.followers,
-            following:user.following,
-            post:populatedPost
-        }
-
-        const token = await jwt.sign({userId:user._id},process.env.SECRET_KEY,{expiresIn:"1d"});
-        //populate each post in the post array...
-        
-
-        return res.cookie("token",token,{httpOnly:true,sameSite:"strict",maxAge: 1*24*60*60*1000}).json({
-            message:`welcome back ${user.username}`,
-            success: true,
-            user
-        });
- 
-    }catch(err){
-        console.log("error:",err);
-    }
-}
 
 export const logout  = async (_,res) => {
     try{
-        return res.cookie("token","",{maxAge:0}).json({
+        return res.cookie("token","",{maxAge:0}).status(200).json({
             message: "logged out successfully",
             success:true,
         })
