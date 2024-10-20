@@ -16,15 +16,23 @@ export const register = async (req,res)=>{
         const {username,email,password} = req.body;
         if(!email||!password||!username){
             return res.status(401).json({
-                message:"something is missing",
+                message:"All fields are required",
                 success:false
             });
         };
 
-        const user = await User.findOne({email})
+        const u_name_check = await User.findOne({username})
+        if(u_name_check){
+            return res.status(401).json({
+                message:"username already exist",
+                success:false
+            });
+        }
+
+        const user = await User.findOne({email});
         if(user){
             return res.status(401).json({
-                message:"email already exist",
+                message:"username already exist",
                 success:false
             });
         };
