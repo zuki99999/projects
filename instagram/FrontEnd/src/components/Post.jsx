@@ -23,8 +23,7 @@ function Post() {
         </DialogTrigger>
         <DialogContent className="flex flex-col items-center text-center">
             <Button variant="ghost" className="cursor-pointer w-fit text-[#ED4956] font-bold" >Unfollow</Button>
-            <Button variant="ghost" className="cursor-pointer w-fit " >add to fauvrate</Button>
-            <Button variant="ghost" className="cursor-pointer w-fit " ></Button>
+            <Button variant="ghost" className="cursor-pointer w-fit " >add to favorites</Button>
             <Button variant="ghost" className="cursor-pointer w-fit" >Delete</Button>
         </DialogContent>
         </Dialog>
