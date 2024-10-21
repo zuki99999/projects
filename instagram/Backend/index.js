@@ -9,7 +9,7 @@ import postRoute from "./routes/post.rout.js"
 import messageRoute from "./routes/message.route.js"
 dotenv.config({});
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 
 app.get("/",(req,res)=>{
