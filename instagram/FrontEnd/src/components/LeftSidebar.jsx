@@ -1,9 +1,10 @@
-import { Heart, Home, LogOut, LucideBike, MessageCircle, PlusSquare, Search, TrendingUp } from 'lucide-react'
+import { Bookmark, Heart, Home, LogOut, MessageCircle, PlusSquare, Search, Send, TrendingUp } from 'lucide-react'
 import React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from 'axios';
+// import {FaRegHeart} from 'react-icons'
 
 const sidebarItems = [
     {icon:<Home/>,text:"Home"},
@@ -48,7 +49,7 @@ function LeftSideBar() {
 
   return (
     <>
-    {/* <div className='flex h-screen w-screen'> */}
+
     <div className=" fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen">
 
         <div className='flex flex-col  '>
@@ -65,9 +66,8 @@ function LeftSideBar() {
                     })
                 }
             </div>
+        </div> 
         </div>
-        </div>
-    {/* </div> */}
 
     </>
     
