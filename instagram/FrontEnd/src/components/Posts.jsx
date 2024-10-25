@@ -5,9 +5,9 @@ function Posts
 () {
   return (
     <>
-      {[1,2,3,4,5,8,7,6,4,9].map(()=>{
+      {[1,2,3,4,5,8,7,6,4,9].map((item, index)=>{
         return(
-          <div>
+          <div key={index}>
             <Post/>
           </div>
         )

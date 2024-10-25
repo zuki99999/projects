@@ -4,9 +4,7 @@ import Home from './components/Home';
 import Mainlayout from './components/Mainlayout';
 import Profile from './components/profile';
 import Login from './components/login';
-import Feed from './components/feed';
-
-
+import Feed from './components/Feed';
 
 const brousingRouter = createBrowserRouter([
   {

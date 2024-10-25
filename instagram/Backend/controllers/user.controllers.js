@@ -6,6 +6,7 @@ import getDataUri from "../utils/dataUri.js";
 import cloudinary from "../utils/cloudanary.js";
 import path from 'path';
 path.resolve('../model/user.model.js');
+import {Post} from '../model/post.model.js';
 
 
 // app.use(express.urlencoded({ extended: true }));
@@ -70,8 +71,8 @@ export const login = async(req,res)=>{
         let user = await User.findOne({email});
         const populatedPost = await Promise.all(
             user.post.map(async(postId)=>{
-                const post = await post.findById(postId);
-                
+                const post = await Post.findById(postId);
+            
                 if(post.author.equals(user._id)){
                     return post
                 }return null;

@@ -1,30 +1,26 @@
 import { Bookmark, Heart, Home, LogOut, MessageCircle, PlusSquare, Search, Send, TrendingUp } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux'
+import { setAuthUser } from '@/redux/aithSlice'
+import { LetterCaseLowercaseIcon } from '@radix-ui/react-icons'
+import CreatePost from './CreatePost'
 // import {FaRegHeart} from 'react-icons'
 
-const sidebarItems = [
-    {icon:<Home/>,text:"Home"},
-    {icon:<Search/>,text:"Search"},
-    {icon:<TrendingUp/>,text:"explore"},
-    {icon:<MessageCircle/>,text:"message"},
-    {icon:<Heart/>,text:"Notification"},
-    {icon:<PlusSquare/>,text:"create"},
-    {icon:(<Avatar className="w-7 h-7">
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-      ),text:"Profile"},
-    {icon:<LogOut/>,text:"logout"},
 
-]
 
 function LeftSideBar() {
-
     const nevicate = useNavigate();
+    const dispatch = useDispatch();
+    const {user} = useSelector(store=>store.auth)//getting user from store
+
+
+    const [open , setOpen] = useState(false);
+
+
 
     const logoutHandler = async()=>{
         try {
@@ -32,6 +28,7 @@ function LeftSideBar() {
             if(res.data.success){
                 console.log("if vitra")
                 toast.success(res.data.message);
+                dispatch(setAuthUser(null));
                 nevicate("/login");
             }
         } catch (error) {
@@ -41,11 +38,25 @@ function LeftSideBar() {
 
     function sidebarHandler(textType){
         if(textType==="logout"){logoutHandler()};
+        if(textType==="create"){ setOpen(true)  };//dilague box of create post
     }
 
-    function clickHandlerr(e){
-        alert(e.text)
-    }
+
+    const sidebarItems = [
+        {icon:<Home/>,text:"Home"},
+        {icon:<Search/>,text:"Search"},
+        {icon:<TrendingUp/>,text:"explore"},
+        {icon:<MessageCircle/>,text:"message"},
+        {icon:<Heart/>,text:"Notification"},
+        {icon:<PlusSquare/>,text:"create"},
+        {icon:(<Avatar className="w-7 h-7">
+            <AvatarImage src={user?.profilePicture || "https://static.vecteezy.com/system/resources/previews/003/715/527/non_2x/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-vector.jpg" }/>
+            <AvatarFallback></AvatarFallback>
+          </Avatar>
+          ),text:"Profile"},
+        {icon:<LogOut/>,text:"logout"},
+    
+    ]
 
   return (
     <>
@@ -67,6 +78,9 @@ function LeftSideBar() {
                 }
             </div>
         </div> 
+
+                <CreatePost open={open} setOpen={setOpen}/>
+
         </div>
 
     </>

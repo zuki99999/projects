@@ -6,16 +6,19 @@ import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setAuthUser } from '@/redux/aithSlice';
 
 function Login() {
+    const dispatch = useDispatch();
 
-    const nevicate = useNavigate();
+    const navigate = useNavigate();
 
-    const [loder , setLoder] = useState(false);
+    const [loader , setLoader] = useState(false);
 
     const [input , setInput] = useState({
-        username:"",
         email:"",
+        password:""
     });
 
     function changeEventHandler(e){
@@ -24,6 +27,7 @@ function Login() {
 
     async function  logoutHandler(e){
         e.preventDefault();
+        console.log(input);
         try {
             const res = await axios.post('http://localhost:8000/api/v1/user/login',input,{
                 headers:{
@@ -31,21 +35,25 @@ function Login() {
                 },
                 withCredentials:true
             });
+            console.log(res)
             if(res.data.success){
-                setLoder(true);
+                dispatch(setAuthUser(res.data.user));
+                setLoader(true);
                 toast.success(res.data.message);
                 setInput({
                     email:"",
                     password:""
                 });
-                     nevicate('/');
+                navigate('/');
             }
 
         } catch (error) {
-            toast.error(error.response.data.message);
-            console.log(error);
+            console.log(input);
+            console.error(error);
+            // toast.error(error.response.data.message);
+
         }finally{
-            setLoder(false);
+            setLoader(false);
         }
     }
 
@@ -67,11 +75,13 @@ function Login() {
 
         <div>
         <span className="py-2 font-medium">password</span>
-        <Input type="password" value={input.password} name='password' onChange={changeEventHandler} className="focus-visible:ring-transparent"/>
+        <Input type="password" value={input.password} name='password' onChange={changeEventHandler}  className="focus-visible:ring-transparent"/>
         </div>
 
+
+
         {
-            loder ? (
+            loader ? (
                 <Button>
                     <Loader2 className="animate-spin"/>
                 </Button>
